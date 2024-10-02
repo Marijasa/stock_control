@@ -10,6 +10,7 @@ const ProductDetail = () => {
         ProductService.getProductById(id)
             .then((response) => {
                 setProduct(response.data);
+                console.log(response.data)
             })
             .catch((error) => {
                 console.error('Error fetching product:', error);
@@ -29,7 +30,7 @@ const ProductDetail = () => {
             {product.instagram_url && <p><a href={product.instagram_url}>Instagram</a></p>}
             <h3>Photos:</h3>
             <ul>
-                {product.photos.split(',').map((photo, index) => (
+                {product.photos.map((photo, index) => (
                     <li key={index}>{photo}</li>
                 ))}
             </ul>
