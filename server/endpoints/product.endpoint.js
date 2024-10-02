@@ -17,37 +17,58 @@ const db = require('../class/database');
 module.exports = function(app, sub = '') {
 
     // 1. Get all products
+    // Get all products with their associated category
     app.get(sub, async (req, res) => {
         try {
             const products = await db('products')
-                .select('products.*', db.raw('GROUP_CONCAT(photos.file_name) AS photos'))
-                .leftJoin('photos', 'products.id', 'photos.product_id')
-                .groupBy('products.id');
+                .leftJoin('categories', 'products.category_id', 'categories.id')
+                .select(
+                    'products.*',
+                    'categories.name as category_name'
+                );
+
             res.json(products);
-        } catch (err) {
-            res.status(500).json({ error: err.message });
+        } catch (error) {
+            res.status(500).json({ error: error.message });
         }
     });
 
+
     // 2. Get a product by ID (with associated photos)
+    // Get a product by ID with associated category and photos
     app.get(sub + '/:id', async (req, res) => {
         const productId = req.params.id;
+
         try {
+            // First query: Get product with its category
             const product = await db('products')
-                .select('products.*', db.raw('GROUP_CONCAT(photos.file_name) AS photos'))
-                .leftJoin('photos', 'products.id', 'photos.product_id')
+                .leftJoin('categories', 'products.category_id', 'categories.id')
+                .select(
+                    'products.*',
+                    'categories.name as category_name'
+                )
                 .where('products.id', productId)
-                .groupBy('products.id')
                 .first();
 
             if (!product) {
                 return res.status(404).json({ error: 'Product not found' });
             }
+
+            // Second query: Get associated photos
+            const photos = await db('photos')
+                .select('file_name')
+                .where('product_id', productId);
+
+            // Add the photos to the product object
+            product.photos = photos.map(photo => photo.file_name);
+
+            // Return the product with its category and photos
             res.json(product);
-        } catch (err) {
-            res.status(500).json({ error: err.message });
+        } catch (error) {
+            res.status(500).json({ error: error.message });
         }
     });
+
 
     // 3. Create a new product (and optionally add photos)
     app.post(sub, async (req, res) => {

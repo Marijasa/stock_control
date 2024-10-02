@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import ProductService from '../../services/Product.service';
+import CategoryService from '../../services/Category.service';
 
 const ProductForm = () => {
     const [product, setProduct] = useState({
@@ -13,6 +14,7 @@ const ProductForm = () => {
         instagram_url: '',
         photos: [],
     });
+    const [categories, setCategories] = useState([]);
 
     const { id } = useParams();
     const navigate = useNavigate();
@@ -28,6 +30,16 @@ const ProductForm = () => {
                 });
         }
     }, [id]);
+
+    useEffect(() => {
+        CategoryService.getAllCategories()
+            .then((response) => {
+                setCategories(response.data);
+            })
+            .catch((error) => {
+                console.error('Error fetching categories:', error);
+            });
+    }, []);
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -98,14 +110,21 @@ const ProductForm = () => {
                 </div>
 
                 <div className="form-group">
-                    <label>Category</label>
-                    <input
-                        type="number"
-                        name="category_id"
-                        className="form-control"
-                        value={product.category_id}
+                    <label>Category select</label>
+                    <select
+                        name='category_id'
+                        className='form-control'
                         onChange={handleInputChange}
-                    />
+                    >
+                        <option value=''>Select a category</option>
+                        {
+                            categories.map((category) => (
+                                <option key={category.id} value={category.id} selected={category.id === product.category_id}>
+                                    {category.name}
+                                </option>
+                            ))
+                        }
+                    </select>
                 </div>
 
                 <div className="form-group">
