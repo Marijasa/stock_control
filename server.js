@@ -2,6 +2,7 @@
  * Importing libraries
  */
 const express = require('express');
+const path = require('path');
 const cors = require('cors'); // Import cors
 
 /**
@@ -21,11 +22,19 @@ const port = config.port || 3000;
  */
 app.use(express.json());
 
+/**
+ * Middleware to enable CORS
+ */
 app.use(cors({
     origin: 'http://localhost:3001', // Permitir solo localhost:3001
     methods: ['GET', 'POST', 'PUT', 'DELETE'], // Métodos permitidos
     credentials: false // Si necesitas enviar cookies u otras credenciales
 }));
+
+/**
+ * Middleware to serve static files
+ */
+app.use('/uploads', express.static(path.join(__dirname, 'server/uploads')));
 
 
 /**

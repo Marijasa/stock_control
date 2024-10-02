@@ -1,6 +1,7 @@
 import axios from 'axios';
+import {config} from "../config/config.config";
 
-const API_URL = 'http://localhost:3000/category'; // Base URL for the API
+const API_URL = config.apiBaseUrl + 'category'; // Base URL for the API
 
 class CategoryService {
     // Get all categories

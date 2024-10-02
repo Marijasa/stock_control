@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import {Link, useNavigate, useParams} from 'react-router-dom';
 import ProductService from '../../services/Product.service';
 import CategoryService from '../../services/Category.service';
 
@@ -42,18 +42,39 @@ const ProductForm = () => {
     }, []);
 
     const handleInputChange = (e) => {
-        const { name, value } = e.target;
-        setProduct({ ...product, [name]: value });
+        const { name, value, files } = e.target;
+        if (name === 'photos') {
+            setProduct({ ...product, photos: files });
+        } else {
+            setProduct({...product, [name]: value});
+        }
     };
 
     const handleSubmit = (e) => {
         e.preventDefault();
+
+        // use formData to send files
+        const data = new FormData();
+
+        // set the product data
+        for (const key in product) {
+            if (key !== 'photos') {
+                data.append(key, product[key]);
+            } else {
+                for (const file of product.photos) {
+                    data.append('photos', file); // append each file to the form data
+                }
+            }
+        }
+
+        console.log('data to send', data);
+
         if (id) {
-            ProductService.updateProduct(id, product)
+            ProductService.updateProduct(id, data)
                 .then(() => navigate('/products'))
                 .catch((error) => console.error('Error updating product:', error));
         } else {
-            ProductService.createProduct(product)
+            ProductService.createProduct(data)
                 .then(() => navigate('/products'))
                 .catch((error) => console.error('Error creating product:', error));
         }
@@ -119,7 +140,8 @@ const ProductForm = () => {
                         <option value=''>Select a category</option>
                         {
                             categories.map((category) => (
-                                <option key={category.id} value={category.id} selected={category.id === product.category_id}>
+                                <option key={category.id} value={category.id}
+                                        selected={category.id === product.category_id}>
                                     {category.name}
                                 </option>
                             ))
@@ -149,9 +171,25 @@ const ProductForm = () => {
                     />
                 </div>
 
-                <button type="submit" className="btn btn-primary">
-                    {id ? 'Update Product' : 'Create Product'}
-                </button>
+                <div className="form-group">
+                    <label htmlFor="photos">Photos</label>
+                    <input
+                        type="file"
+                        id="photos"
+                        name="photos"
+                        className="form-control"
+                        onChange={handleInputChange}
+                        multiple
+                        accept="image/*" // Aceptar solo imágenes
+                    />
+                </div>
+
+                <div className="mt-5">
+                    <button type="submit" className="btn btn-primary me-3">
+                        {id ? 'Update Product' : 'Create Product'}
+                    </button>
+                    <Link to={`/products`} className="btn btn-secondary">Product list</Link>
+                </div>
             </form>
         </div>
     );

@@ -1,3 +1,5 @@
+
+
 /**
  * This module exports return the already working app routes
  * using the parent "app" variable. The sub here works in case the parent
@@ -7,6 +9,8 @@
  * @param sub
  */
 const db = require('../class/database');
+const multer = require('multer');
+const fs = require("node:fs");
 
 /**
  * This module exports the product CRUD endpoints.
@@ -15,6 +19,18 @@ const db = require('../class/database');
  * @param sub
  */
 module.exports = function(app, sub = '') {
+
+    // Configuración de multer
+    const storage = multer.diskStorage({
+        destination: (req, file, cb) => {
+            cb(null, 'server/uploads/');
+        },
+        filename: (req, file, cb) => {
+            cb(null, `${Date.now()}-${file.originalname}`);
+        }
+    });
+
+    const upload = multer({ storage });
 
     // 1. Get all products
     // Get all products with their associated category
@@ -71,8 +87,9 @@ module.exports = function(app, sub = '') {
 
 
     // 3. Create a new product (and optionally add photos)
-    app.post(sub, async (req, res) => {
-        const { name, description, original_price, price, category_id, quantity, instagram_url, photos } = req.body;
+    app.post(sub, upload.array('photos'), async (req, res) => {
+        const { name, description, original_price, price, category_id } = req.body;
+        const photos = req.files; // Archivos subidos
 
         try {
             const [productId] = await db('products').insert({
@@ -81,25 +98,34 @@ module.exports = function(app, sub = '') {
                 original_price,
                 price,
                 category_id,
-                quantity,
-                instagram_url
             });
 
-            if (photos && photos.length > 0) {
-                const photoInserts = photos.map(photo => ({ product_id: productId, file_name: photo }));
-                await db('photos').insert(photoInserts);
+            console.log('Product created',productId);
+            console.log('complete req',req);
+
+            // save photos
+            if (photos.length > 0) {
+                const photoPromises = photos.map(photo => {
+                    return db('photos').insert({
+                        product_id: productId,
+                        file_name: photo.filename,
+                    });
+                });
+                await Promise.all(photoPromises);
             }
 
-            res.status(201).json({ id: productId, message: 'Product created successfully' });
-        } catch (err) {
-            res.status(500).json({ error: err.message });
+            res.status(201).json({ message: 'Product created successfully', productId });
+        } catch (error) {
+            return res.status(500).json({ error: error.message });
         }
     });
 
+
     // 4. Update a product (and optionally update photos)
-    app.put(sub + '/:id', async (req, res) => {
+    app.put(sub + '/:id', upload.array('photos'), async (req, res) => {
         const productId = req.params.id;
-        const { name, description, original_price, price, category_id, quantity, instagram_url, photos } = req.body;
+        const { name, description, original_price, price, category_id, quantity, instagram_url } = req.body;
+        const photos = req.files;
 
         try {
             const updatedRows = await db('products')
@@ -118,13 +144,14 @@ module.exports = function(app, sub = '') {
                 return res.status(404).json({ error: 'Product not found' });
             }
 
-            if (photos && photos.length > 0) {
-                // Remove existing photos
-                await db('photos').where({ product_id: productId }).del();
-
-                // Insert new photos
-                const photoInserts = photos.map(photo => ({ product_id: productId, file_name: photo }));
-                await db('photos').insert(photoInserts);
+            if (photos.length > 0) {
+                const photoPromises = photos.map(photo => {
+                    return db('photos').insert({
+                        product_id: productId,
+                        file_name: photo.filename,
+                    });
+                });
+                await Promise.all(photoPromises);
             }
 
             res.json({ message: 'Product updated successfully' });
@@ -133,11 +160,32 @@ module.exports = function(app, sub = '') {
         }
     });
 
+
     // 5. Delete a product (and its photos)
     app.delete(sub + '/:id', async (req, res) => {
         const productId = req.params.id;
 
         try {
+            // Get associated photos
+            const photos = await db('photos')
+                .select('file_name')
+                .where('product_id', productId);
+
+            const photoPaths = photos.map(photo => {
+                return photo.file_name;
+            });
+
+            // delete files from uploads folder
+            photoPaths.forEach(photoPath => {
+                fs.unlink('server/uploads/' + photoPath, (err) => {
+                    if (err) {
+                        console.error(`Error deleting photo: ${photoPath}`, err);
+                    } else {
+                        console.log(`Successfully deleted photo: ${photoPath}`);
+                    }
+                });
+            });
+
             // Delete associated photos first
             await db('photos').where({ product_id: productId }).del();
 
@@ -149,8 +197,10 @@ module.exports = function(app, sub = '') {
             }
 
             res.json({ message: 'Product and associated photos deleted successfully' });
+
         } catch (err) {
             res.status(500).json({ error: err.message });
         }
     });
+
 };
