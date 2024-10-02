@@ -24,8 +24,10 @@ const ProductList = () => {
                 <thead className="thead-dark">
                 <tr>
                     <th>Name</th>
-                    <th>Price</th>
                     <th>Category</th>
+                    <th>Original price</th>
+                    <th>Price</th>
+                    <th>Quantity</th>
                     <th>Actions</th>
                 </tr>
                 </thead>
@@ -33,8 +35,10 @@ const ProductList = () => {
                 {products.map(product => (
                     <tr key={product.id}>
                         <td>{product.name}</td>
+                        <td>{product.category_name}</td>
+                        <td>${product.original_price}</td>
                         <td>${product.price}</td>
-                        <td>{product.category_id}</td>
+                        <td>{product.quantity}</td>
                         <td>
                             <Link to={`/products/${product.id}`} className="btn btn-info btn-sm me-2">View</Link>
                             <Link to={`/products/edit/${product.id}`}
