@@ -2,8 +2,14 @@ import React, { useState, useEffect } from 'react';
 import {Link, useNavigate, useParams} from 'react-router-dom';
 import ProductService from '../../services/Product.service';
 import CategoryService from '../../services/Category.service';
+import {useSelector} from "react-redux";
+import useFormatCurrency from "../../useFormatCurrency";
+
 
 const ProductForm = () => {
+
+    const dollarPrice = useSelector(state => state.dollar.data);
+
     const [product, setProduct] = useState({
         barcode: '',
         name: '',
@@ -86,7 +92,7 @@ const ProductForm = () => {
             <h1>{id ? 'Edit Product' : 'Add Product'}</h1>
             <form onSubmit={handleSubmit}>
                 <div className="form-group">
-                    <label>Bar-code</label>
+                    <label className={'form-label'}>Bar-code</label>
                     <input
                         type="text"
                         name="barcode"
@@ -97,7 +103,7 @@ const ProductForm = () => {
                 </div>
 
                 <div className="form-group required">
-                    <label>Product Name</label>
+                    <label className={'form-label'}>Product Name</label>
                     <input
                         type="text"
                         name="name"
@@ -109,7 +115,7 @@ const ProductForm = () => {
                 </div>
 
                 <div className="form-group">
-                    <label>Description</label>
+                    <label className={'form-label'}>Description</label>
                     <textarea
                         name="description"
                         className="form-control"
@@ -119,7 +125,9 @@ const ProductForm = () => {
                 </div>
 
                 <div className="form-group required">
-                    <label>Original Price</label>
+                    <label className={'form-label'}>Original Price</label>
+                    <br/>
+                    <label>Price in Colones: {useFormatCurrency(product.original_price * dollarPrice.venta, 'CRC')}</label>
                     <input
                         type="number"
                         name="original_price"
@@ -131,7 +139,10 @@ const ProductForm = () => {
                 </div>
 
                 <div className="form-group required">
-                    <label>Price</label>
+                    <label className={'form-label'}>Price</label>
+                    <br/>
+                    <label>Price in
+                        Colones: {useFormatCurrency(product.price * dollarPrice.venta, 'CRC')}</label>
                     <input
                         type="number"
                         name="price"
@@ -143,7 +154,7 @@ const ProductForm = () => {
                 </div>
 
                 <div className="form-group">
-                    <label>Category select</label>
+                    <label className={'form-label'}>Category select</label>
                     <select
                         name='category_id'
                         className='form-control'
@@ -162,7 +173,7 @@ const ProductForm = () => {
                 </div>
 
                 <div className="form-group">
-                    <label>Quantity</label>
+                    <label className={'form-label'}>Quantity</label>
                     <input
                         type="number"
                         name="quantity"
@@ -173,7 +184,7 @@ const ProductForm = () => {
                 </div>
 
                 <div className="form-group">
-                    <label>Instagram URL</label>
+                    <label className={'form-label'}>Instagram URL</label>
                     <input
                         type="text"
                         name="instagram_url"
@@ -184,7 +195,7 @@ const ProductForm = () => {
                 </div>
 
                 <div className="form-group">
-                    <label htmlFor="photos">Photos</label>
+                    <label className={'form-label'} htmlFor="photos">Photos</label>
                     <input
                         type="file"
                         id="photos"

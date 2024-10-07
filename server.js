@@ -45,6 +45,11 @@ app.use('/uploads', express.static(path.join(__dirname, 'server/uploads')));
 console.log('Getting Endpoint Routes');
 const routes = [
     {
+        name: 'Dollar Endpoint',
+        path: './server/endpoints/dollar.endpoint',
+        sub: 'dollar'
+    },
+    {
         name: 'Status Endpoint',
         path: './server/endpoints/status.endpoint',
         sub: 'status'

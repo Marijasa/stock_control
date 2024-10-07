@@ -2,8 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import ProductService from "../../services/Product.service";
 import {config} from "../../config/config.config";
+import useFormatCurrency from "../../useFormatCurrency";
+import {useSelector} from "react-redux";
 
 const ProductDetail = () => {
+
+    const dollarPrice = useSelector(state => state.dollar.data);
+
     const [product, setProduct] = useState(null);
     const { id } = useParams();
 
@@ -30,9 +35,21 @@ const ProductDetail = () => {
                     <h4>Description</h4>
                     <p>{product.description || 'No available.'}</p>
                     <h4>Original Price</h4>
-                    <p className="text-success">${product.original_price}</p>
+                    <p className="text-success">
+                        {/* eslint-disable-next-line react-hooks/rules-of-hooks */}
+                        Dollar: {useFormatCurrency(product.original_price, 'USD')}
+                        <br/>
+                        {/* eslint-disable-next-line react-hooks/rules-of-hooks */}
+                        Colon: {useFormatCurrency(product.original_price * dollarPrice.venta, 'CRC')}
+                    </p>
                     <h4>Sale Price</h4>
-                    <p className="text-success">${product.price}</p>
+                    <p className="text-success">
+                        {/* eslint-disable-next-line react-hooks/rules-of-hooks */}
+                        Dollar: {useFormatCurrency(product.price, 'USD')}
+                        <br/>
+                        {/* eslint-disable-next-line react-hooks/rules-of-hooks */}
+                        Colon: {useFormatCurrency(product.price * dollarPrice.venta, 'CRC')}
+                    </p>
                     <h4>Category</h4>
                     <p>{product.category_name || 'No category assigned.'}</p>
                     <h4>Quantity</h4>
