@@ -25,8 +25,10 @@ const ProductDetail = () => {
             <h2 className="mb-4">{product.name}</h2>
             <div className="row">
                 <div className="col-md-6">
+                    <h4>Bar-code</h4>
+                    <p>{product.barcode || 'No available.'}</p>
                     <h4>Description</h4>
-                    <p>{product.description || 'No description available.'}</p>
+                    <p>{product.description || 'No available.'}</p>
                     <h4>Original Price</h4>
                     <p className="text-success">${product.original_price}</p>
                     <h4>Sale Price</h4>
@@ -35,6 +37,9 @@ const ProductDetail = () => {
                     <p>{product.category_name || 'No category assigned.'}</p>
                     <h4>Quantity</h4>
                     <p>{product.quantity || 'Not available'}</p>
+                    <h4>Instagram</h4>
+                    <a className={'btn btn-secondary btn-sm ' + (product.instagram_url !== null ? '' : 'disabled')}
+                       rel={'noreferrer'} target={'_blank'} href={product.instagram_url}>Instagram</a>
                 </div>
             </div>
             <h4>Photos</h4>

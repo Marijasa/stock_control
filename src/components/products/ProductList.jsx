@@ -23,6 +23,7 @@ const ProductList = () => {
             <table className="table table-striped table-hover">
                 <thead className="thead-dark">
                 <tr>
+                    <th>Bar-code</th>
                     <th>Name</th>
                     <th>Category</th>
                     <th>Original price</th>
@@ -34,6 +35,7 @@ const ProductList = () => {
                 <tbody>
                 {products.map(product => (
                     <tr key={product.id}>
+                        <td>{product.barcode || 'No available'}</td>
                         <td>{product.name}</td>
                         <td>{product.category_name}</td>
                         <td>${product.original_price}</td>
@@ -43,7 +45,8 @@ const ProductList = () => {
                             <Link to={`/products/${product.id}`} className="btn btn-info btn-sm me-2">View</Link>
                             <Link to={`/products/edit/${product.id}`}
                                   className="btn btn-warning btn-sm me-2">Edit</Link>
-                            <Link to={`/products/delete/${product.id}`} className="btn btn-danger btn-sm">Delete</Link>
+                            <Link to={`/products/delete/${product.id}`} className="btn btn-danger btn-sm me-2">Delete</Link>
+                            <a className={'btn btn-secondary btn-sm ' + (product.instagram_url !== null ? '' : 'disabled')} rel={'noreferrer'} target={'_blank'} href={product.instagram_url}>Instagram</a>
                         </td>
                     </tr>
                 ))}

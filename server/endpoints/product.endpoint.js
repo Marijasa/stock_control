@@ -88,16 +88,19 @@ module.exports = function(app, sub = '') {
 
     // 3. Create a new product (and optionally add photos)
     app.post(sub, upload.array('photos'), async (req, res) => {
-        const { name, description, original_price, price, category_id } = req.body;
+        const { barcode, name, description, original_price, price, quantity, category_id, instagram_url } = req.body;
         const photos = req.files; // Archivos subidos
 
         try {
             const [productId] = await db('products').insert({
+                barcode,
                 name,
                 description,
                 original_price,
                 price,
+                quantity,
                 category_id,
+                instagram_url
             });
 
             console.log('Product created',productId);
@@ -124,13 +127,14 @@ module.exports = function(app, sub = '') {
     // 4. Update a product (and optionally update photos)
     app.put(sub + '/:id', upload.array('photos'), async (req, res) => {
         const productId = req.params.id;
-        const { name, description, original_price, price, category_id, quantity, instagram_url } = req.body;
+        const { barcode, name, description, original_price, price, category_id, quantity, instagram_url } = req.body;
         const photos = req.files;
 
         try {
             const updatedRows = await db('products')
                 .where({ id: productId })
                 .update({
+                    barcode,
                     name,
                     description,
                     original_price,

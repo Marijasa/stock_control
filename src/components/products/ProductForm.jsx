@@ -5,10 +5,11 @@ import CategoryService from '../../services/Category.service';
 
 const ProductForm = () => {
     const [product, setProduct] = useState({
+        barcode: '',
         name: '',
         description: '',
         original_price: '',
-        price: '',
+        price: 0,
         category_id: '',
         quantity: 1,
         instagram_url: '',
@@ -85,6 +86,17 @@ const ProductForm = () => {
             <h1>{id ? 'Edit Product' : 'Add Product'}</h1>
             <form onSubmit={handleSubmit}>
                 <div className="form-group">
+                    <label>Bar-code</label>
+                    <input
+                        type="text"
+                        name="barcode"
+                        className="form-control"
+                        value={product.barcode}
+                        onChange={handleInputChange}
+                    />
+                </div>
+
+                <div className="form-group required">
                     <label>Product Name</label>
                     <input
                         type="text"
@@ -106,7 +118,7 @@ const ProductForm = () => {
                     ></textarea>
                 </div>
 
-                <div className="form-group">
+                <div className="form-group required">
                     <label>Original Price</label>
                     <input
                         type="number"
@@ -118,7 +130,7 @@ const ProductForm = () => {
                     />
                 </div>
 
-                <div className="form-group">
+                <div className="form-group required">
                     <label>Price</label>
                     <input
                         type="number"
