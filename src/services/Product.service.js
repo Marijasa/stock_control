@@ -1,7 +1,6 @@
 import axios from 'axios';
-import {config} from "../config/config.config";
 
-const API_URL = config.apiBaseUrl + 'product'; // Base URL for the API
+const API_URL = process.env.REACT_APP_API_BASE_URL + 'product'; // Base URL for the API
 
 class ProductService {
     // Get all products

@@ -1,6 +1,8 @@
 /**
  * Importing libraries
  */
+const https = require('https');
+const fs = require('fs');
 const express = require('express');
 const path = require('path');
 const cors = require('cors'); // Import cors
@@ -26,7 +28,7 @@ app.use(express.json());
  * Middleware to enable CORS
  */
 app.use(cors({
-    origin: 'http://localhost:3001', // Permitir solo localhost:3001
+    origin: 'https://emeybe.online', // Permitir solo localhost:3001
     methods: ['GET', 'POST', 'PUT', 'DELETE'], // Métodos permitidos
     credentials: false // Si necesitas enviar cookies u otras credenciales
 }));
@@ -77,7 +79,17 @@ routes.forEach(route => {
 });
 
 
-// Start the server
-app.listen(port, () => {
+// Cargar los archivos del certificado
+const options = {
+    key: fs.readFileSync('../ssl/keys/a90db_58a75_d6ca4debe2b2a3ff93806cb88823925e.key'),
+    cert: fs.readFileSync('../ssl/certs/emeybe_online_a90db_58a75_1736112346_d690593e33ea4b38101e653c9f99b492.crt'),
+};
+
+// Servir la aplicación a través de HTTPS
+https.createServer(options, app).listen(port, () => {
     console.log(`Server is running on port ${port}`);
 });
+
+
+
+

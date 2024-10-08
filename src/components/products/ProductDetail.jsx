@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import ProductService from "../../services/Product.service";
-import {config} from "../../config/config.config";
 import useFormatCurrency from "../../useFormatCurrency";
 import {useSelector} from "react-redux";
 
@@ -64,7 +63,7 @@ const ProductDetail = () => {
                 {product.photos.map(photo => (
                     <div className="col-md-3" key={photo.id}>
                         <img
-                            src={config.apiBaseUrl + 'uploads/' + photo}
+                            src={process.env.REACT_APP_API_BASE_URL + 'uploads/' + photo}
                             alt={photo}
                             className="img-thumbnail mb-2"
                         />
@@ -90,7 +89,7 @@ const ProductDetail = () => {
     //         <h3>Photos:</h3>
     //         <ul>
     //             {product.photos.map((photo, index) => (
-    //                 <li key={index}><img src={config.apiBaseUrl + 'uploads/' + photo} alt={photo} height={'150px'}/> </li>
+    //                 <li key={index}><img src={process.env.REACT_APP_API_BASE_URL + 'uploads/' + photo} alt={photo} height={'150px'}/> </li>
     //             ))}
     //         </ul>
     //         <div className="mt-5">
