@@ -27,8 +27,19 @@ app.use(express.json());
 /**
  * Middleware to enable CORS
  */
+const allowedOrigins = [
+    'https://emeybe.online',
+    'http://localhost:3001'
+];
+
 app.use(cors({
-    origin: 'https://emeybe.online', // Permitir solo localhost:3001
+    origin: (origin, callback) => {
+        if (allowedOrigins.includes(origin) || !origin) {
+            callback(null, true);
+        } else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
     methods: ['GET', 'POST', 'PUT', 'DELETE'], // Métodos permitidos
     credentials: false // Si necesitas enviar cookies u otras credenciales
 }));
@@ -79,16 +90,24 @@ routes.forEach(route => {
 });
 
 
-// Cargar los archivos del certificado
-const options = {
-    key: fs.readFileSync('../ssl/keys/a90db_58a75_d6ca4debe2b2a3ff93806cb88823925e.key'),
-    cert: fs.readFileSync('../ssl/certs/emeybe_online_a90db_58a75_1736112346_d690593e33ea4b38101e653c9f99b492.crt'),
-};
 
-// Servir la aplicación a través de HTTPS
-https.createServer(options, app).listen(port, () => {
+// Start server http -- DEVELOPMENT
+app.listen(port, () => { // development
     console.log(`Server is running on port ${port}`);
 });
+
+
+// Start server https -- PRODUCTION
+
+// // use certificate and key
+// const options = {
+//     key: fs.readFileSync('../ssl/keys/a90db_58a75_d6ca4debe2b2a3ff93806cb88823925e.key'),
+//     cert: fs.readFileSync('../ssl/certs/emeybe_online_a90db_58a75_1736112346_d690593e33ea4b38101e653c9f99b492.crt'),
+// };
+
+// https.createServer(options, app).listen(port, () => {
+//     console.log(`Server is running on port ${port}`);
+// });
 
 
 

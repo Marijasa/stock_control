@@ -4,6 +4,7 @@ import ProductService from '../../services/Product.service';
 import CategoryService from '../../services/Category.service';
 import {useSelector} from "react-redux";
 import useFormatCurrency from "../../useFormatCurrency";
+import {BarcodeScanner} from "./BarcodeScanner";
 
 
 const ProductForm = () => {
@@ -87,12 +88,17 @@ const ProductForm = () => {
         }
     };
 
+    const selectedCode = (code) => {
+        setProduct({...product, barcode: code});
+    }
+
     return (
         <div className="container mt-5">
             <h1>{id ? 'Edit Product' : 'Add Product'}</h1>
             <form onSubmit={handleSubmit}>
                 <div className="form-group">
                     <label className={'form-label'}>Bar-code</label>
+                    <BarcodeScanner onSelectedCode={selectedCode} />
                     <input
                         type="text"
                         name="barcode"
