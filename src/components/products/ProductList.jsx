@@ -1,17 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import {Link, useNavigate} from 'react-router-dom';
+import {Link} from 'react-router-dom';
 import ProductService from '../../services/Product.service';
 import useFormatCurrency from "../../useFormatCurrency";
 import {useSelector} from "react-redux";
 
 const ProductList = () => {
+
     const [products, setProducts] = useState([]);
     const [total_original, setTotalOriginal] = useState(0);
     const [total_price, setTotalPrice] = useState(0);
 
     const dollarPrice = useSelector(state => state.dollar.data);
-
-    const navigate = useNavigate();
 
     useEffect(() => {
         ProductService.getAllProducts()

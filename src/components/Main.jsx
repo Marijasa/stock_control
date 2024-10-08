@@ -9,7 +9,7 @@ import {useDispatch} from "react-redux";
 import {setDollar} from "../store/dollar.reducer";
 
 
-const Main = ({children}) => {
+const Main = () => {
 
     const dispatch = useDispatch();
 
@@ -21,7 +21,7 @@ const Main = ({children}) => {
             .catch((error) => {
                 console.error('Error fetching dollar price:', error);
             });
-    }, []);
+    }, [dispatch]);
 
     return (
             <Router>
