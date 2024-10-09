@@ -1,5 +1,4 @@
 import {useEffect, useState} from "react";
-import { useMediaDevices } from "react-media-devices";
 import { useZxing } from "react-zxing";
 
 export const BarcodeScanner = ({onSelectedCode}) => {

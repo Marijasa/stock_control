@@ -159,12 +159,13 @@ const ProductForm = () => {
                     />
                 </div>
 
-                <div className="form-group">
+                <div className="form-group required">
                     <label className={'form-label'}>Category select</label>
                     <select
                         name='category_id'
                         className='form-control'
                         onChange={handleInputChange}
+                        required
                     >
                         <option value=''>Select a category</option>
                         {

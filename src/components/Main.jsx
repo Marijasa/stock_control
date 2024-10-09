@@ -1,12 +1,13 @@
 import {useEffect} from "react";
 import DollarService from "../services/Dollar.service";
-import {BrowserRouter as Router, Route, Routes} from "react-router-dom";
+import {Route, Routes} from "react-router-dom";
 import ProductList from "./products/ProductList";
 import ProductForm from "./products/ProductForm";
 import ProductDetail from "./products/ProductDetail";
 import ProductDelete from "./products/ProductDelete";
 import {useDispatch} from "react-redux";
 import {setDollar} from "../store/dollar.reducer";
+import RouterProvider from "./providers/RouterProvider";
 
 
 const Main = () => {
@@ -24,7 +25,7 @@ const Main = () => {
     }, [dispatch]);
 
     return (
-            <Router>
+            <RouterProvider>
                 <Routes>
                     <Route path="/" element={<ProductList />} />
                     <Route path="/products" element={<ProductList />} />
@@ -33,7 +34,7 @@ const Main = () => {
                     <Route path="/products/:id" element={<ProductDetail />} />
                     <Route path="/products/delete/:id" element={<ProductDelete />} />
                 </Routes>
-            </Router>
+            </RouterProvider>
     );
 }
 
