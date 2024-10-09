@@ -1,14 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { createRoot } from 'react-dom/client';
 import {useSelector} from "react-redux";
-import {Link} from 'react-router-dom';
+import {Link,useNavigate} from 'react-router-dom';
 
-import StoreProvider from "../providers/StoreProvider";
+import MyDataTable from "../generic/MyDataTable";
 
 import ProductService from '../../services/Product.service';
 import useFormatCurrency from "../../useFormatCurrency";
-import MyDataTable from "../generic/MyDataTable";
-import RouterProvider from "../providers/RouterProvider";
 
 const ProductList = () => {
 
@@ -53,6 +51,8 @@ const ProductList = () => {
         }
     ];
 
+    const navigate = useNavigate();
+
     const options = {
         drawCallback: (settings) => {
             const rows = settings.api.rows();
@@ -69,17 +69,16 @@ const ProductList = () => {
                 const actionButtonContainer = node.querySelector('.action-button');
 
                 if (actionButtonContainer) {
+
                     const root = createRoot(actionButtonContainer);
                     root.render(
-                        <StoreProvider>
-                            <RouterProvider>
-                                <Link to={`/products/${productId}`} className="btn btn-info btn-sm me-2">View</Link>
-                                <Link to={`/products/edit/${productId}`} className="btn btn-warning btn-sm me-2">Edit</Link>
-                                <Link to={`/products/delete/${productId}`} className="btn btn-danger btn-sm me-2">Delete</Link>
-                                <a className={'btn btn-secondary btn-sm ' + (instagram_url !== null ? '' : 'disabled')}
-                                   rel={'noreferrer'} target={'_blank'} href={instagram_url}>Instagram</a>
-                            </RouterProvider>
-                        </StoreProvider>
+                        <>
+                            <button onClick={() => navigate(`/products/${productId}`)} className="btn btn-info btn-sm me-2">View</button>
+                            <button onClick={() => navigate(`/products/edit/${productId}`)} className="btn btn-warning btn-sm me-2">Edit</button>
+                            <button onClick={() => navigate(`/products/delete/${productId}`)} className="btn btn-danger btn-sm me-2">Delete</button>
+                            <a className={'btn btn-secondary btn-sm ' + (instagram_url !== null ? '' : 'disabled')}
+                               rel={'noreferrer'} target={'_blank'} href={instagram_url}>Instagram</a>
+                        </>
                     );
                 }
             });
