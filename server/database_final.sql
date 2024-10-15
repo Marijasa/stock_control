@@ -73,7 +73,7 @@ CREATE TABLE IF NOT EXISTS `products` (
   `description` text,
   `original_price` decimal(10,2) NOT NULL,
   `price` decimal(10,2) NOT NULL,
-  `barcode` varchar(15) DEFAULT NULL,
+  `barcode` varchar(35) DEFAULT NULL,
   `category_id` int(11) DEFAULT NULL,
   `quantity` int(11) DEFAULT '1',
   `instagram_url` varchar(100) DEFAULT NULL,

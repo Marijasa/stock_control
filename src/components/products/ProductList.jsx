@@ -17,6 +17,10 @@ const ProductList = () => {
     const dollarPrice = useSelector(state => state.dollar.data);
     const columns = [
         {
+            title: 'ID',
+            data: 'id',
+        },
+        {
             title: 'Bar-code',
             data: 'barcode',
             render: function (data, type, row) {
@@ -53,34 +57,41 @@ const ProductList = () => {
 
     const navigate = useNavigate();
 
+    const rootMap = new Map();
     const options = {
+        order: [[0, 'desc']],
         drawCallback: (settings) => {
             const rows = settings.api.rows();
             const nodes = rows.nodes().toArray();
             const data = rows.data().toArray();
 
             nodes.forEach((node, index) => {
-                const rowData = data[index];
-                console.log('---------- draw node')
-                const productId = rowData.id;
+                // we need to get the product id from the first cell of the row
+                const productId = Number(node.cells[0].innerHTML);
+
+                // we need to find the row data for the current product id
+                const rowData = data.find((item) => item.id === productId);
                 const instagram_url = rowData.instagram_url;
 
-                // Admin Button
                 const actionButtonContainer = node.querySelector('.action-button');
 
-                if (actionButtonContainer) {
-
-                    const root = createRoot(actionButtonContainer);
-                    root.render(
-                        <>
-                            <button onClick={() => navigate(`/products/${productId}`)} className="btn btn-info btn-sm me-2">View</button>
-                            <button onClick={() => navigate(`/products/edit/${productId}`)} className="btn btn-warning btn-sm me-2">Edit</button>
-                            <button onClick={() => navigate(`/products/delete/${productId}`)} className="btn btn-danger btn-sm me-2">Delete</button>
-                            <a className={'btn btn-secondary btn-sm ' + (instagram_url !== null ? '' : 'disabled')}
-                               rel={'noreferrer'} target={'_blank'} href={instagram_url}>Instagram</a>
-                        </>
-                    );
+                let root;
+                if (!rootMap.has(actionButtonContainer)) {
+                    root = createRoot(actionButtonContainer);
+                    rootMap.set(actionButtonContainer, root);
+                } else {
+                    root = rootMap.get(actionButtonContainer);
                 }
+
+                root.render(
+                    <>
+                        <button onClick={() => navigate(`/products/${productId}`)} className="btn btn-info btn-sm me-2">View</button>
+                        <button onClick={() => navigate(`/products/edit/${productId}`)} className="btn btn-warning btn-sm me-2">Edit</button>
+                        <button onClick={() => navigate(`/products/delete/${productId}`)} className="btn btn-danger btn-sm me-2">Delete</button>
+                        <a className={'btn btn-secondary btn-sm ' + (instagram_url !== null ? '' : 'disabled')}
+                           rel={'noreferrer'} target={'_blank'} href={instagram_url}>Instagram</a>
+                    </>
+                );
             });
         }
     }

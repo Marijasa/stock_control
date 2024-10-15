@@ -25,7 +25,7 @@ const ProductDetail = () => {
     if (!product) return <p>Loading...</p>;
 
     return (
-        <div className="container mt-4">
+        <div className="container mt-4 mb-5">
             <h2 className="mb-4">{product.name}</h2>
             <div className="row">
                 <div className="col-md-6">
@@ -70,9 +70,15 @@ const ProductDetail = () => {
                     </div>
                 ))}
             </div>
-            <div className="mt-5">
-                <Link to={`/products/edit/${product.id}`} className="btn btn-warning me-2">Edit</Link>
-                <Link to={`/products`} className="btn btn-secondary">Product list</Link>
+            <div className="row">
+                <div className="mt-3 col-md-12 col-sm-6 d-flex justify-content-center">
+                    <Link to={`/products/${product.id-1}`} className="btn btn-info me-2 col">{'<< Previous'}</Link>
+                    <Link to={`/products/${product.id+1}`} className="btn btn-primary col">{'Next >>'}</Link>
+                </div>
+                <div className="mt-3 col-md-12 col-sm-6 d-flex justify-content-center">
+                    <Link to={`/products/edit/${product.id}`} className="btn btn-warning me-2 col">Edit</Link>
+                    <Link to={`/products`} className="btn btn-secondary col">Product list</Link>
+                </div>
             </div>
         </div>
     );

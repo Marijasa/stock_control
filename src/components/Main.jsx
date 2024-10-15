@@ -24,6 +24,7 @@ const Main = () => {
     }, [dispatch]);
 
     return (
+        <div className={'container mb-5'}>
             <Router>
                 <Routes>
                     <Route path="/" element={<ProductList />} />
@@ -34,6 +35,7 @@ const Main = () => {
                     <Route path="/products/delete/:id" element={<ProductDelete />} />
                 </Routes>
             </Router>
+        </div>
     );
 }
 

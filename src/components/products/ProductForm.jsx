@@ -12,14 +12,14 @@ const ProductForm = () => {
     const dollarPrice = useSelector(state => state.dollar.data);
 
     const [product, setProduct] = useState({
-        barcode: '',
+        barcode: null,
         name: '',
         description: '',
         original_price: '',
         price: 0,
         category_id: '',
         quantity: 1,
-        instagram_url: '',
+        instagram_url: null,
         photos: [],
     });
     const [categories, setCategories] = useState([]);
@@ -67,7 +67,9 @@ const ProductForm = () => {
         // set the product data
         for (const key in product) {
             if (key !== 'photos') {
-                data.append(key, product[key]);
+                if(product[key] !== null && product[key] !== '') {
+                    data.append(key, product[key]);
+                }
             } else {
                 for (const file of product.photos) {
                     data.append('photos', file); // append each file to the form data
