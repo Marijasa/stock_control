@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import ProductService from "../../services/Product.service";
-import useFormatCurrency from "../../useFormatCurrency";
+import useFormatCurrency from "../../hooks/useFormatCurrency";
 import {useSelector} from "react-redux";
 
 const ProductDetail = () => {

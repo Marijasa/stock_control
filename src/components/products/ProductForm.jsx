@@ -3,7 +3,7 @@ import {Link, useNavigate, useParams} from 'react-router-dom';
 import ProductService from '../../services/Product.service';
 import CategoryService from '../../services/Category.service';
 import {useSelector} from "react-redux";
-import useFormatCurrency from "../../useFormatCurrency";
+import useFormatCurrency from "../../hooks/useFormatCurrency";
 import {BarcodeScanner} from "./BarcodeScanner";
 
 
@@ -16,7 +16,11 @@ const ProductForm = () => {
         name: '',
         description: '',
         original_price: '',
+        original_price_dollar: '',
+        original_price_colon: '',
         price: 0,
+        price_dollar: '',
+        price_colon: '',
         category_id: '',
         quantity: 1,
         instagram_url: null,
@@ -31,13 +35,22 @@ const ProductForm = () => {
         if (id) {
             ProductService.getProductById(id)
                 .then((response) => {
-                    setProduct(response.data);
+                    const data = response.data;
+                    const original_price = Number(data.original_price);
+                    data.original_price_dollar = original_price;
+                    data.original_price_colon = (original_price * dollarPrice.venta).toFixed(0);
+
+                    const price = Number(data.price);
+                    data.price_dollar = price;
+                    data.price_colon = (price * dollarPrice.venta).toFixed(0);
+                    console.log('product data', data);
+                    setProduct(data);
                 })
                 .catch((error) => {
                     console.error('Error fetching product:', error);
                 });
         }
-    }, [id]);
+    }, [id, dollarPrice]);
 
     useEffect(() => {
         CategoryService.getAllCategories()
@@ -50,11 +63,26 @@ const ProductForm = () => {
     }, []);
 
     const handleInputChange = (e) => {
-        const { name, value, files } = e.target;
-        if (name === 'photos') {
-            setProduct({ ...product, photos: files });
-        } else {
+        const { value, files } = e.target;
+        let { name } = e.target;
+
+        if (name !== 'photos' && !name.includes('price')) {
             setProduct({...product, [name]: value});
+        } else if(name === 'photos') {
+            setProduct({ ...product, photos: files });
+        }
+
+        // set the currency
+        if (name.includes('dollar')) {
+            name = name.replace("_dollar", "");
+            const inColon = (value * dollarPrice.venta).toFixed(0);
+            setProduct({...product, [name+'_dollar']: value, [name+'_colon']: inColon});
+
+        } else if (name.includes('colon')) {
+            name = name.replace("_colon", "");
+            const inDollar = (value / dollarPrice.venta).toFixed(2);
+            setProduct({...product, [name+'_colon']: value, [name+'_dollar']: inDollar});
+
         }
     };
 
@@ -66,11 +94,18 @@ const ProductForm = () => {
 
         // set the product data
         for (const key in product) {
-            if (key !== 'photos') {
+            if (key !== 'photos' && !key.includes('price')) {
                 if(product[key] !== null && product[key] !== '') {
                     data.append(key, product[key]);
                 }
-            } else {
+
+            } else if(key === 'original_price') {
+                data.append('original_price', product.original_price_dollar);
+
+            } else if(key === 'price') {
+                data.append('price', product.price_dollar);
+
+            } else if(key === 'photos') {
                 for (const file of product.photos) {
                     data.append('photos', file); // append each file to the form data
                 }
@@ -100,7 +135,7 @@ const ProductForm = () => {
             <form onSubmit={handleSubmit}>
                 <div className="form-group">
                     <label className={'form-label'}>Bar-code</label>
-                    <BarcodeScanner onSelectedCode={selectedCode} />
+                    <BarcodeScanner onSelectedCode={selectedCode}/>
                     <input
                         type="text"
                         name="barcode"
@@ -134,31 +169,58 @@ const ProductForm = () => {
 
                 <div className="form-group required">
                     <label className={'form-label'}>Original Price</label>
-                    <br/>
-                    <label>Price in Colones: {useFormatCurrency(product.original_price * dollarPrice.venta, 'CRC')}</label>
-                    <input
-                        type="number"
-                        name="original_price"
-                        className="form-control"
-                        value={product.original_price}
-                        onChange={handleInputChange}
-                        required
-                    />
+                    <div className="d-flex">
+                        <div className="form-group required col-6 pe-2">
+                            <label className={'form-label'}>Dollar</label>
+                            <input
+                                type="number"
+                                name="original_price_dollar"
+                                className="form-control"
+                                value={product.original_price_dollar}
+                                onChange={handleInputChange}
+                                required
+                            />
+                        </div>
+                        <div className="form-group required col-6 ps-2">
+                            <label className={'form-label'}>Colon</label>
+                            <input
+                                type="number"
+                                name="original_price_colon"
+                                className="form-control"
+                                value={product.original_price_colon}
+                                onChange={handleInputChange}
+                                required
+                            />
+                        </div>
+                    </div>
                 </div>
 
                 <div className="form-group required">
                     <label className={'form-label'}>Price</label>
-                    <br/>
-                    <label>Price in
-                        Colones: {useFormatCurrency(product.price * dollarPrice.venta, 'CRC')}</label>
-                    <input
-                        type="number"
-                        name="price"
-                        className="form-control"
-                        value={product.price}
-                        onChange={handleInputChange}
-                        required
-                    />
+                    <div className="d-flex">
+                        <div className="form-group required col-6 pe-2">
+                            <label className={'form-label'}>Dollar</label>
+                            <input
+                                type="number"
+                                name="price_dollar"
+                                className="form-control"
+                                value={product.price_dollar}
+                                onChange={handleInputChange}
+                                required
+                            />
+                        </div>
+                        <div className="form-group required col-6 ps-2">
+                            <label className={'form-label'}>Colon</label>
+                            <input
+                                type="number"
+                                name="price_colon"
+                                className="form-control"
+                                value={product.price_colon}
+                                onChange={handleInputChange}
+                                required
+                            />
+                        </div>
+                    </div>
                 </div>
 
                 <div className="form-group required">
