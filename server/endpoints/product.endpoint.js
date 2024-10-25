@@ -35,6 +35,7 @@ module.exports = function(app, sub = '') {
     // 1. Get all products
     // Get all products with their associated category
     app.get(sub, async (req, res) => {
+        console.log('Getting all products');
         try {
             const products = await db('products')
                 .leftJoin('categories', 'products.category_id', 'categories.id')
@@ -53,6 +54,8 @@ module.exports = function(app, sub = '') {
     // 2. Get a product by ID (with associated photos)
     // Get a product by ID with associated category and photos
     app.get(sub + '/:id', async (req, res) => {
+        console.log('Getting product by ID');
+
         const productId = req.params.id;
 
         try {
@@ -88,6 +91,8 @@ module.exports = function(app, sub = '') {
 
     // 3. Create a new product (and optionally add photos)
     app.post(sub, upload.array('photos'), async (req, res) => {
+        console.log('Creating a new product');
+
         const { barcode, name, description, original_price, price, quantity, category_id, instagram_url } = req.body;
         const photos = req.files; // Archivos subidos
 
@@ -126,6 +131,8 @@ module.exports = function(app, sub = '') {
 
     // 4. Update a product (and optionally update photos)
     app.put(sub + '/:id', upload.array('photos'), async (req, res) => {
+        console.log('Updating a product');
+
         const productId = req.params.id;
         const { barcode, name, description, original_price, price, category_id, quantity, instagram_url } = req.body;
         const photos = req.files;
@@ -167,6 +174,8 @@ module.exports = function(app, sub = '') {
 
     // 5. Delete a product (and its photos)
     app.delete(sub + '/:id', async (req, res) => {
+        console.log('Deleting a product');
+
         const productId = req.params.id;
 
         try {

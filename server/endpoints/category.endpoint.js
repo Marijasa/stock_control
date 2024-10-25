@@ -16,6 +16,7 @@ module.exports = function(app, sub = '') {
 
     // 1. Get all categories
     app.get(sub, async (req, res) => {
+        console.log('Getting all categories');
         try {
             const categories = await db.select('*').from('categories');
             res.json(categories);
@@ -26,6 +27,7 @@ module.exports = function(app, sub = '') {
 
     // 2. Get a category by ID
     app.get(sub + '/:id', async (req, res) => {
+        console.log('Getting category by ID');
         const categoryId = req.params.id;
         try {
             const category = await db('categories').where({ id: categoryId }).first();
@@ -40,6 +42,7 @@ module.exports = function(app, sub = '') {
 
     // 3. Create a new category
     app.post(sub, async (req, res) => {
+        console.log('Creating a new category');
         const categoryName = req.body.name;
 
         if (!categoryName) {
@@ -56,6 +59,7 @@ module.exports = function(app, sub = '') {
 
     // 4. Update a category
     app.put(sub + '/:id', async (req, res) => {
+        console.log('Updating a category');
         const categoryName = req.body.name;
         const categoryId = req.params.id;
 
@@ -76,6 +80,7 @@ module.exports = function(app, sub = '') {
 
     // 5. Delete a category
     app.delete(sub + '/:id', async (req, res) => {
+        console.log('Deleting a category');
         const categoryId = req.params.id;
 
         try {

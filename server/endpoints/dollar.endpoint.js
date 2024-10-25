@@ -12,6 +12,7 @@ const db = require('../class/database');
 module.exports = async function(app, sub = ''){
     // 1. Get dollar price
     app.get(sub, async (req, res) => {
+        console.log('Getting dollar price');
         try {
             const products = await db('dollar')
                 .select(
